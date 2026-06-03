@@ -1,5 +1,6 @@
+import { redirect } from "next/navigation";
 import { Dashboard } from "@/components/Dashboard";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import type {
   DbOshi,
   DbSavingGoal,
@@ -11,30 +12,52 @@ import type {
   SavingRule,
 } from "@/lib/types";
 
-async function fetchDashboardData() {
-  const [oshiRes, rulesRes, goalRes, recordsRes] = await Promise.all([
-    supabase.from("oshis").select("*").single<DbOshi>(),
-    supabase.from("saving_rules").select("*").returns<DbSavingRule[]>(),
-    supabase.from("saving_goals").select("*").single<DbSavingGoal>(),
+export default async function DashboardPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) redirect("/login");
+
+  const { data: oshiData } = await supabase
+    .from("oshis")
+    .select("*")
+    .eq("user_id", user.id)
+    .returns<DbOshi[]>()
+    .maybeSingle();
+
+  if (!oshiData) redirect("/settings/oshi");
+
+  const [rulesRes, goalRes, recordsRes] = await Promise.all([
+    supabase
+      .from("saving_rules")
+      .select("*")
+      .eq("oshi_id", oshiData.id)
+      .returns<DbSavingRule[]>(),
+    supabase
+      .from("saving_goals")
+      .select("*")
+      .eq("oshi_id", oshiData.id)
+      .returns<DbSavingGoal[]>()
+      .maybeSingle(),
     supabase
       .from("saving_records")
       .select("*")
+      .eq("oshi_id", oshiData.id)
       .order("saved_at", { ascending: false })
       .limit(20)
       .returns<DbSavingRecord[]>(),
   ]);
 
-  if (oshiRes.error) throw new Error(oshiRes.error.message);
-  if (rulesRes.error) throw new Error(rulesRes.error.message);
-  if (goalRes.error) throw new Error(goalRes.error.message);
-  if (recordsRes.error) throw new Error(recordsRes.error.message);
+  if (!goalRes.data) redirect("/settings/oshi");
 
   const oshi: Oshi = {
-    id: oshiRes.data.id,
-    name: oshiRes.data.name,
-    group: oshiRes.data.group_name,
-    memberColor: oshiRes.data.member_color,
-    emoji: oshiRes.data.emoji,
+    id: oshiData.id,
+    name: oshiData.name,
+    group: oshiData.group_name,
+    memberColor: oshiData.member_color,
+    emoji: oshiData.emoji,
   };
 
   const rules: SavingRule[] = (rulesRes.data ?? []).map((r) => ({
@@ -62,12 +85,6 @@ async function fetchDashboardData() {
     amount: r.amount,
     savedAt: r.saved_at,
   }));
-
-  return { oshi, rules, goal, records };
-}
-
-export default async function DashboardPage() {
-  const { oshi, rules, goal, records } = await fetchDashboardData();
 
   return <Dashboard oshi={oshi} goal={goal} rules={rules} records={records} />;
 }

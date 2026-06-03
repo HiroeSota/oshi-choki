@@ -1,7 +1,8 @@
 "use client";
 
 import { useOptimistic, useState, useTransition } from "react";
-import { saveMoney } from "@/app/actions";
+import { saveMoney, signOut } from "@/app/actions";
+import { BottomNav } from "@/components/BottomNav";
 import { OshiCard } from "@/components/OshiCard";
 import { QuickSaveButton } from "@/components/QuickSaveButton";
 import { RecentActivity } from "@/components/RecentActivity";
@@ -29,7 +30,6 @@ export function Dashboard({ oshi, goal, rules, records }: Props) {
   function handleSave(rule: SavingRule) {
     setToast(rule.amount);
     setTimeout(() => setToast(null), 1500);
-
     startTransition(async () => {
       addOptimisticAmount(rule.amount);
       await saveMoney(rule, oshi.id);
@@ -45,13 +45,14 @@ export function Dashboard({ oshi, goal, rules, records }: Props) {
             <span className="text-xl">💝</span>
             <span className="font-bold text-gray-800 tracking-tight text-lg">Oshi-Choki</span>
           </div>
-          <button
-            type="button"
-            className="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center text-sm hover:bg-gray-200 transition-colors"
-            aria-label="設定"
-          >
-            ⚙️
-          </button>
+          <form action={signOut}>
+            <button
+              type="submit"
+              className="text-xs text-gray-400 hover:text-gray-600 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              ログアウト
+            </button>
+          </form>
         </div>
       </header>
 
@@ -69,22 +70,33 @@ export function Dashboard({ oshi, goal, rules, records }: Props) {
         )}
 
         {/* ワンタップ貯金 */}
-        <section className="bg-white rounded-3xl p-5 shadow-sm">
-          <h3 className="font-bold text-gray-800 text-sm mb-4 flex items-center gap-2">
-            <span>⚡</span>
-            ワンタップ推し貯金
-          </h3>
-          <div className="grid grid-cols-2 gap-3">
-            {rules.map((rule) => (
-              <QuickSaveButton
-                key={rule.id}
-                rule={rule}
-                memberColor={oshi.memberColor}
-                onSave={handleSave}
-              />
-            ))}
-          </div>
-        </section>
+        {rules.length > 0 ? (
+          <section className="bg-white rounded-3xl p-5 shadow-sm">
+            <h3 className="font-bold text-gray-800 text-sm mb-4 flex items-center gap-2">
+              <span>⚡</span>
+              ワンタップ推し貯金
+            </h3>
+            <div className="grid grid-cols-2 gap-3">
+              {rules.map((rule) => (
+                <QuickSaveButton
+                  key={rule.id}
+                  rule={rule}
+                  memberColor={oshi.memberColor}
+                  onSave={handleSave}
+                />
+              ))}
+            </div>
+          </section>
+        ) : (
+          <section className="bg-white rounded-3xl p-5 shadow-sm text-center">
+            <p className="text-gray-400 text-sm">
+              ルールがまだ設定されていません
+            </p>
+            <p className="text-gray-400 text-xs mt-1">
+              下のナビから「ルール」を設定しよう！
+            </p>
+          </section>
+        )}
 
         {/* 統計サマリー */}
         <section className="grid grid-cols-3 gap-3">
@@ -115,31 +127,7 @@ export function Dashboard({ oshi, goal, rules, records }: Props) {
         <RecentActivity records={records.slice(0, 5)} memberColor={oshi.memberColor} />
       </main>
 
-      {/* ボトムナビ */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-gray-100">
-        <div className="max-w-md mx-auto px-4 h-16 flex items-center justify-around">
-          {[
-            { icon: "🏠", label: "ホーム", active: true },
-            { icon: "⭐", label: "推し設定", active: false },
-            { icon: "📋", label: "ルール", active: false },
-            { icon: "📈", label: "統計", active: false },
-          ].map((item) => (
-            <button
-              key={item.label}
-              type="button"
-              className="flex flex-col items-center gap-1 px-3 py-1 rounded-xl transition-colors"
-            >
-              <span className="text-xl">{item.icon}</span>
-              <span
-                className="text-xs font-medium"
-                style={{ color: item.active ? oshi.memberColor : "#9ca3af" }}
-              >
-                {item.label}
-              </span>
-            </button>
-          ))}
-        </div>
-      </nav>
+      <BottomNav memberColor={oshi.memberColor} />
     </div>
   );
 }

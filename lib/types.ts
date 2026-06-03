@@ -35,6 +35,7 @@ export type SavingGoal = {
 // Supabase から返ってくる生の型
 export type DbOshi = {
   id: string;
+  user_id: string;
   name: string;
   group_name: string;
   member_color: string;
@@ -43,14 +44,17 @@ export type DbOshi = {
 
 export type DbSavingRule = {
   id: string;
+  user_id: string;
   oshi_id: string;
   trigger: string;
   amount: number;
   emoji: string;
+  created_at: string;
 };
 
 export type DbSavingGoal = {
   id: string;
+  user_id: string;
   oshi_id: string;
   label: string;
   target_amount: number;
@@ -60,6 +64,7 @@ export type DbSavingGoal = {
 
 export type DbSavingRecord = {
   id: string;
+  user_id: string;
   oshi_id: string;
   rule_id: string | null;
   trigger: string;

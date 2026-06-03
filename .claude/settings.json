@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd /Users/hiroesouta/oshi-tyoki && [ -n \"$(git status --porcelain)\" ] && git add -A && git commit -m \"chore: auto-save from Claude Code\" && git push origin main || true",
+            "statusMessage": "変更をGitHubに保存中..."
+          }
+        ]
+      }
+    ]
+  }
+}
