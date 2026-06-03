@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+:root {
+  --font-noto-sans-jp: "Noto Sans JP", sans-serif;
+}
+
+body {
+  font-family: var(--font-noto-sans-jp), sans-serif;
+}
+
+@keyframes bounce-up {
+  0% {
+    opacity: 1;
+    transform: translateY(0) translateX(-50%);
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(-20px) translateX(-50%);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-32px) translateX(-50%);
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px) translateX(-50%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) translateX(-50%);
+  }
+}
+
+.animate-bounce-up {
+  animation: bounce-up 0.6s ease-out forwards;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.2s ease-out forwards;
+}
