@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { upsertOshi } from "@/app/actions";
+import { createClient } from "@/lib/supabase/client";
 import type { Oshi, SavingGoal } from "@/lib/types";
 
 const PRESET_COLORS = [
@@ -10,8 +11,6 @@ const PRESET_COLORS = [
   "#98FB98", "#DDA0DD", "#FF8C00", "#40E0D0",
   "#FF69B4", "#9370DB", "#F0E6FF", "#4A90D9",
 ];
-
-const PRESET_EMOJIS = ["🌸", "⭐", "🌟", "💫", "🎤", "🎵", "🎶", "🎸", "🎹", "🎺", "🎙️", "🎬", "💝", "💖", "🌹", "🌺"];
 
 type Props = {
   oshi: Oshi | null;
@@ -22,14 +21,48 @@ export function OshiSettingsForm({ oshi, goal }: Props) {
   const [name, setName] = useState(oshi?.name ?? "");
   const [group, setGroup] = useState(oshi?.group ?? "");
   const [color, setColor] = useState(oshi?.memberColor ?? "#FF6B9D");
-  const [emoji, setEmoji] = useState(oshi?.emoji ?? "🌸");
   const [imageUrl, setImageUrl] = useState(oshi?.imageUrl ?? "");
+  const [uploading, setUploading] = useState(false);
   const [goalLabel, setGoalLabel] = useState(goal?.label ?? "");
   const [goalTarget, setGoalTarget] = useState(goal?.targetAmount?.toString() ?? "");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isNew = !oshi;
+
+  async function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setError(null);
+
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setError("ログインが必要です");
+      setUploading(false);
+      return;
+    }
+
+    const ext = file.name.split(".").pop();
+    const filePath = `${user.id}/${Date.now()}.${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("oshi-images")
+      .upload(filePath, file, { upsert: true });
+
+    if (uploadError) {
+      setError("画像のアップロードに失敗しました");
+      setUploading(false);
+      return;
+    }
+
+    const { data } = supabase.storage.from("oshi-images").getPublicUrl(filePath);
+    setImageUrl(data.publicUrl);
+    setUploading(false);
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -46,7 +79,7 @@ export function OshiSettingsForm({ oshi, goal }: Props) {
         name,
         groupName: group,
         memberColor: color,
-        emoji,
+        emoji: "🌸",
         imageUrl: imageUrl || undefined,
         goalLabel,
         goalTarget: target,
@@ -88,27 +121,49 @@ export function OshiSettingsForm({ oshi, goal }: Props) {
               <span>⭐</span> 推しの基本情報
             </h2>
 
-            {/* 推し画像URL */}
+            {/* 推し画像 */}
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">推しの画像URL（任意）</label>
+              <label className="block text-xs font-medium text-gray-500 mb-2">推しの画像（任意）</label>
               <input
-                type="url"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-pink-300 text-sm"
-                placeholder="https://example.com/image.jpg"
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleImageChange}
               />
-              {imageUrl && (
-                <div className="mt-2 flex items-center gap-2">
+              <div className="flex items-center gap-3">
+                {imageUrl ? (
                   <img
                     src={imageUrl}
-                    alt="プレビュー"
-                    className="w-16 h-16 rounded-xl object-cover"
-                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                    alt="推しの画像"
+                    className="w-20 h-20 rounded-2xl object-cover shadow-sm"
                   />
-                  <p className="text-xs text-gray-400">プレビュー</p>
+                ) : (
+                  <div className="w-20 h-20 rounded-2xl bg-gray-100 flex items-center justify-center text-3xl">
+                    📷
+                  </div>
+                )}
+                <div className="flex flex-col gap-2">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="px-4 py-2 rounded-xl text-sm font-medium text-white transition-opacity disabled:opacity-60"
+                    style={{ background: color }}
+                  >
+                    {uploading ? "アップロード中..." : imageUrl ? "画像を変更" : "画像を選択"}
+                  </button>
+                  {imageUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setImageUrl("")}
+                      className="px-4 py-2 rounded-xl text-sm font-medium text-gray-500 bg-gray-100 hover:bg-gray-200 transition-colors"
+                    >
+                      削除
+                    </button>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
 
             <div>
@@ -166,7 +221,6 @@ export function OshiSettingsForm({ oshi, goal }: Props) {
                 <span className="text-xs text-gray-500">カスタムカラー: </span>
                 <span className="text-xs font-mono text-gray-700">{color}</span>
               </div>
-              {/* プレビュー */}
               <div
                 className="w-14 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
                 style={{ background: color }}
@@ -217,7 +271,7 @@ export function OshiSettingsForm({ oshi, goal }: Props) {
 
           <button
             type="submit"
-            disabled={isPending}
+            disabled={isPending || uploading}
             className="w-full py-3.5 rounded-2xl text-white font-bold text-sm transition-opacity disabled:opacity-60 shadow-md"
             style={{ background: `linear-gradient(135deg, ${color} 0%, ${color}99 100%)` }}
           >
