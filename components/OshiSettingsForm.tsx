@@ -23,6 +23,7 @@ export function OshiSettingsForm({ oshi, goal }: Props) {
   const [group, setGroup] = useState(oshi?.group ?? "");
   const [color, setColor] = useState(oshi?.memberColor ?? "#FF6B9D");
   const [emoji, setEmoji] = useState(oshi?.emoji ?? "🌸");
+  const [imageUrl, setImageUrl] = useState(oshi?.imageUrl ?? "");
   const [goalLabel, setGoalLabel] = useState(goal?.label ?? "");
   const [goalTarget, setGoalTarget] = useState(goal?.targetAmount?.toString() ?? "");
   const [error, setError] = useState<string | null>(null);
@@ -46,6 +47,7 @@ export function OshiSettingsForm({ oshi, goal }: Props) {
         groupName: group,
         memberColor: color,
         emoji,
+        imageUrl: imageUrl || undefined,
         goalLabel,
         goalTarget: target,
         existingOshiId: oshi?.id,
@@ -86,25 +88,27 @@ export function OshiSettingsForm({ oshi, goal }: Props) {
               <span>⭐</span> 推しの基本情報
             </h2>
 
-            {/* 絵文字選択 */}
+            {/* 推し画像URL */}
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-2">アイコン絵文字</label>
-              <div className="grid grid-cols-8 gap-1.5">
-                {PRESET_EMOJIS.map((e) => (
-                  <button
-                    key={e}
-                    type="button"
-                    onClick={() => setEmoji(e)}
-                    className="w-9 h-9 rounded-xl text-lg flex items-center justify-center transition-all"
-                    style={{
-                      background: emoji === e ? `${color}22` : "#f5f5f5",
-                      border: emoji === e ? `2px solid ${color}` : "2px solid transparent",
-                    }}
-                  >
-                    {e}
-                  </button>
-                ))}
-              </div>
+              <label className="block text-xs font-medium text-gray-500 mb-1.5">推しの画像URL（任意）</label>
+              <input
+                type="url"
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-pink-300 text-sm"
+                placeholder="https://example.com/image.jpg"
+              />
+              {imageUrl && (
+                <div className="mt-2 flex items-center gap-2">
+                  <img
+                    src={imageUrl}
+                    alt="プレビュー"
+                    className="w-16 h-16 rounded-xl object-cover"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                  />
+                  <p className="text-xs text-gray-400">プレビュー</p>
+                </div>
+              )}
             </div>
 
             <div>
@@ -167,7 +171,7 @@ export function OshiSettingsForm({ oshi, goal }: Props) {
                 className="w-14 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
                 style={{ background: color }}
               >
-                {emoji}
+                推し
               </div>
             </div>
           </section>

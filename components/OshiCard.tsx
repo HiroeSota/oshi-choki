@@ -18,28 +18,30 @@ export function OshiCard({ oshi, goal, totalSaved }: Props) {
         background: `linear-gradient(135deg, ${oshi.memberColor}ee 0%, ${oshi.memberColor}88 100%)`,
       }}
     >
-      {/* 背景デコレーション */}
-      <div
-        className="absolute -top-8 -right-8 w-40 h-40 rounded-full opacity-20"
-        style={{ background: "white" }}
-      />
-      <div
-        className="absolute -bottom-12 -left-6 w-32 h-32 rounded-full opacity-10"
-        style={{ background: "white" }}
-      />
+      {oshi.imageUrl ? (
+        <img
+          src={oshi.imageUrl}
+          alt={oshi.name}
+          className="absolute inset-y-0 right-0 h-full w-3/5 object-cover object-top"
+          style={{
+            WebkitMaskImage: "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.5) 100%)",
+            maskImage: "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.5) 100%)",
+          }}
+        />
+      ) : (
+        <>
+          <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full opacity-20" style={{ background: "white" }} />
+          <div className="absolute -bottom-12 -left-6 w-32 h-32 rounded-full opacity-10" style={{ background: "white" }} />
+        </>
+      )}
 
       <div className="relative z-10">
         {/* ヘッダー */}
-        <div className="flex items-center gap-3 mb-5">
-          <div className="w-14 h-14 rounded-2xl bg-white/30 flex items-center justify-center text-2xl backdrop-blur-sm">
-            {oshi.emoji}
-          </div>
-          <div>
-            <p className="text-white/70 text-xs font-medium tracking-widest uppercase">
-              {oshi.group}
-            </p>
-            <h2 className="text-xl font-bold">{oshi.name}</h2>
-          </div>
+        <div className="mb-5">
+          <p className="text-white/70 text-xs font-medium tracking-widest uppercase">
+            {oshi.group}
+          </p>
+          <h2 className="text-2xl font-bold">{oshi.name}</h2>
         </div>
 
         {/* 貯金額 */}

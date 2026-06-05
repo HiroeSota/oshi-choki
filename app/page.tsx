@@ -58,6 +58,7 @@ export default async function DashboardPage() {
     group: oshiData.group_name,
     memberColor: oshiData.member_color,
     emoji: oshiData.emoji,
+    imageUrl: oshiData.image_url,
   };
 
   const rules: SavingRule[] = (rulesRes.data ?? []).map((r) => ({

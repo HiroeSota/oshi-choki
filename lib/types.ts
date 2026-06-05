@@ -4,6 +4,7 @@ export type Oshi = {
   group: string;
   memberColor: string;
   emoji: string;
+  imageUrl?: string;
 };
 
 export type SavingRule = {
@@ -40,6 +41,7 @@ export type DbOshi = {
   group_name: string;
   member_color: string;
   emoji: string;
+  image_url?: string;
 };
 
 export type DbSavingRule = {
