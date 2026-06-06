@@ -26,7 +26,8 @@ export default function LoginPage() {
       if (error) {
         setError(error.message);
       } else {
-        setMessage("確認メールを送りました！メールを確認してからログインしてください。");
+        setMessage("確認メールを送りました！\n※現在開発中のため、メール確認なしでそのままログインできます。");
+        setIsSignUp(false);
       }
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -101,7 +102,7 @@ export default function LoginPage() {
             )}
 
             {message && (
-              <div className="bg-green-50 text-green-600 text-sm px-4 py-3 rounded-xl">
+              <div className="bg-green-50 text-green-600 text-sm px-4 py-3 rounded-xl whitespace-pre-line">
                 {message}
               </div>
             )}
