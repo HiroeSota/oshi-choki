@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import type { SavingRule } from "@/lib/types";
 
@@ -161,13 +162,14 @@ export async function uploadOshiImage(formData: FormData): Promise<{ url: string
   const ext = file.name.split(".").pop();
   const filePath = `${user.id}/${Date.now()}.${ext}`;
 
-  const { error: uploadError } = await supabase.storage
+  const admin = createAdminClient();
+  const { error: uploadError } = await admin.storage
     .from("oshi-images")
     .upload(filePath, file, { upsert: true });
 
   if (uploadError) return { error: uploadError.message };
 
-  const { data } = supabase.storage.from("oshi-images").getPublicUrl(filePath);
+  const { data } = admin.storage.from("oshi-images").getPublicUrl(filePath);
   return { url: data.publicUrl };
 }
 
