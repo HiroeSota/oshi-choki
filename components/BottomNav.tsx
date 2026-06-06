@@ -26,9 +26,14 @@ export function BottomNav({ memberColor }: Props) {
             <Link
               key={item.href}
               href={item.href}
-              className="flex flex-col items-center gap-1 px-3 py-1 rounded-xl transition-colors"
+              className="flex flex-col items-center gap-1 px-4 py-2 rounded-2xl transition-all active:scale-90 active:opacity-60 select-none"
+              style={{
+                background: isActive ? `${memberColor}18` : "transparent",
+              }}
             >
-              <span className="text-xl">{item.icon}</span>
+              <span className={`text-xl transition-transform ${isActive ? "scale-110" : "scale-100"}`}>
+                {item.icon}
+              </span>
               <span
                 className="text-xs font-medium transition-colors"
                 style={{ color: isActive ? memberColor : "#9ca3af" }}
