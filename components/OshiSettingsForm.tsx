@@ -54,7 +54,7 @@ export function OshiSettingsForm({ oshi, goal }: Props) {
       .upload(filePath, file, { upsert: true });
 
     if (uploadError) {
-      setError("画像のアップロードに失敗しました");
+      setError(`アップロードエラー: ${uploadError.message}`);
       setUploading(false);
       return;
     }
