@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { useRef, useState, useTransition } from "react";
-import { upsertOshi } from "@/app/actions";
-import { createClient } from "@/lib/supabase/client";
+import { uploadOshiImage, upsertOshi } from "@/app/actions";
 import type { Oshi, SavingGoal } from "@/lib/types";
 
 const PRESET_COLORS = [
@@ -38,32 +37,16 @@ export function OshiSettingsForm({ oshi, goal }: Props) {
     setUploading(true);
     setError(null);
 
-    const supabase = createClient();
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    console.log("auth user:", user, "error:", userError);
-    if (!user) {
-      setError("ログインが必要です");
-      setUploading(false);
-      return;
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const result = await uploadOshiImage(formData);
+
+    if ("error" in result) {
+      setError(`アップロードエラー: ${result.error}`);
+    } else {
+      setImageUrl(result.url);
     }
-
-    const ext = file.name.split(".").pop();
-    const filePath = `${user.id}/${Date.now()}.${ext}`;
-    console.log("uploading to path:", filePath);
-
-    const { error: uploadError } = await supabase.storage
-      .from("oshi-images")
-      .upload(filePath, file, { upsert: true });
-
-    console.log("upload error:", uploadError);
-    if (uploadError) {
-      setError(`アップロードエラー: ${uploadError.message}`);
-      setUploading(false);
-      return;
-    }
-
-    const { data } = supabase.storage.from("oshi-images").getPublicUrl(filePath);
-    setImageUrl(data.publicUrl);
     setUploading(false);
   }
 

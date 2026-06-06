@@ -150,6 +150,27 @@ export async function deleteRule(id: string): Promise<{ error: string } | void> 
   revalidatePath("/");
 }
 
+export async function uploadOshiImage(formData: FormData): Promise<{ url: string } | { error: string }> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated" };
+
+  const file = formData.get("file") as File;
+  if (!file) return { error: "No file provided" };
+
+  const ext = file.name.split(".").pop();
+  const filePath = `${user.id}/${Date.now()}.${ext}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("oshi-images")
+    .upload(filePath, file, { upsert: true });
+
+  if (uploadError) return { error: uploadError.message };
+
+  const { data } = supabase.storage.from("oshi-images").getPublicUrl(filePath);
+  return { url: data.publicUrl };
+}
+
 export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();
