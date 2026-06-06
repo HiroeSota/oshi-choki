@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useOptimistic, useState, useTransition } from "react";
 import { saveMoney, signOut } from "@/app/actions";
 import { BottomNav } from "@/components/BottomNav";
@@ -13,9 +14,10 @@ type Props = {
   goal: SavingGoal;
   rules: SavingRule[];
   records: SavingRecord[];
+  allOshis: Oshi[];
 };
 
-export function Dashboard({ oshi, goal, rules, records }: Props) {
+export function Dashboard({ oshi, goal, rules, records, allOshis }: Props) {
   const [isPending, startTransition] = useTransition();
   const [toast, setToast] = useState<number | null>(null);
 
@@ -54,6 +56,39 @@ export function Dashboard({ oshi, goal, rules, records }: Props) {
             </button>
           </form>
         </div>
+
+        {/* 推し切り替えピル（複数推しがいる場合のみ表示） */}
+        {allOshis.length > 1 && (
+          <div className="max-w-md mx-auto px-4 pb-3 flex gap-3 overflow-x-auto scrollbar-hide">
+            {allOshis.map((o) => {
+              const isSelected = o.id === oshi.id;
+              return (
+                <Link
+                  key={o.id}
+                  href={`/?oshi_id=${o.id}`}
+                  className="flex flex-col items-center gap-1 flex-shrink-0"
+                >
+                  <div
+                    className="w-8 h-8 rounded-full transition-all"
+                    style={{
+                      background: o.memberColor,
+                      boxShadow: isSelected
+                        ? `0 0 0 2px white, 0 0 0 4px ${o.memberColor}`
+                        : "none",
+                      opacity: isSelected ? 1 : 0.6,
+                    }}
+                  />
+                  <span
+                    className="text-xs leading-tight max-w-[3rem] text-center truncate"
+                    style={{ color: isSelected ? o.memberColor : "#9ca3af" }}
+                  >
+                    {o.name}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </header>
 
       <main className="max-w-md mx-auto px-4 pb-24 space-y-4 pt-4">

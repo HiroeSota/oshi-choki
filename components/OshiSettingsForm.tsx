@@ -14,9 +14,10 @@ const PRESET_COLORS = [
 type Props = {
   oshi: Oshi | null;
   goal: SavingGoal | null;
+  backHref?: string;
 };
 
-export function OshiSettingsForm({ oshi, goal }: Props) {
+export function OshiSettingsForm({ oshi, goal, backHref }: Props) {
   const [name, setName] = useState(oshi?.name ?? "");
   const [group, setGroup] = useState(oshi?.group ?? "");
   const [color, setColor] = useState(oshi?.memberColor ?? "#FF6B9D");
@@ -110,6 +111,7 @@ export function OshiSettingsForm({ oshi, goal }: Props) {
         goalTarget: target,
         existingOshiId: oshi?.id,
         existingGoalId: goal?.id,
+        redirectTo: backHref ?? "/",
       });
       if (result && "error" in result) {
         setError(result.error);
@@ -122,8 +124,8 @@ export function OshiSettingsForm({ oshi, goal }: Props) {
       {/* ヘッダー */}
       <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-gray-100">
         <div className="max-w-md mx-auto px-4 h-14 flex items-center gap-3">
-          {oshi && (
-            <Link href="/" className="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200 transition-colors">
+          {(oshi || backHref) && (
+            <Link href={backHref ?? "/"} className="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-200 transition-colors">
               ←
             </Link>
           )}
@@ -305,17 +307,6 @@ export function OshiSettingsForm({ oshi, goal }: Props) {
         </form>
       </main>
 
-      {oshi && (
-        <div className="fixed bottom-0 left-0 right-0 pb-6 flex justify-center">
-          <Link
-            href="/"
-            className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white text-sm font-bold shadow-md border border-gray-100 hover:shadow-lg transition-all active:scale-95"
-            style={{ color }}
-          >
-            ← ダッシュボードに戻る
-          </Link>
-        </div>
-      )}
     </div>
   );
 }

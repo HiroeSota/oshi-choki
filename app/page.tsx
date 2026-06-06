@@ -12,7 +12,11 @@ import type {
   SavingRule,
 } from "@/lib/types";
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ oshi_id?: string }>;
+}) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -20,14 +24,17 @@ export default async function DashboardPage() {
 
   if (!user) redirect("/login");
 
-  const { data: oshiData } = await supabase
+  const { data: oshisData } = await supabase
     .from("oshis")
     .select("*")
     .eq("user_id", user.id)
-    .returns<DbOshi[]>()
-    .maybeSingle();
+    .returns<DbOshi[]>();
 
-  if (!oshiData) redirect("/settings/oshi");
+  if (!oshisData || oshisData.length === 0) redirect("/settings/oshi/new");
+
+  const { oshi_id } = await searchParams;
+  const oshiData =
+    (oshi_id ? oshisData.find((o) => o.id === oshi_id) : null) ?? oshisData[0];
 
   const [rulesRes, goalRes, recordsRes] = await Promise.all([
     supabase
@@ -50,7 +57,7 @@ export default async function DashboardPage() {
       .returns<DbSavingRecord[]>(),
   ]);
 
-  if (!goalRes.data) redirect("/settings/oshi");
+  if (!goalRes.data) redirect("/settings/oshi/new");
 
   const oshi: Oshi = {
     id: oshiData.id,
@@ -60,6 +67,15 @@ export default async function DashboardPage() {
     emoji: oshiData.emoji,
     imageUrl: oshiData.image_url,
   };
+
+  const allOshis: Oshi[] = oshisData.map((o) => ({
+    id: o.id,
+    name: o.name,
+    group: o.group_name,
+    memberColor: o.member_color,
+    emoji: o.emoji,
+    imageUrl: o.image_url,
+  }));
 
   const rules: SavingRule[] = (rulesRes.data ?? []).map((r) => ({
     id: r.id,
@@ -87,5 +103,13 @@ export default async function DashboardPage() {
     savedAt: r.saved_at,
   }));
 
-  return <Dashboard oshi={oshi} goal={goal} rules={rules} records={records} />;
+  return (
+    <Dashboard
+      oshi={oshi}
+      goal={goal}
+      rules={rules}
+      records={records}
+      allOshis={allOshis}
+    />
+  );
 }

@@ -41,6 +41,7 @@ export async function upsertOshi(data: {
   goalTarget: number;
   existingOshiId?: string;
   existingGoalId?: string;
+  redirectTo?: string;
 }): Promise<{ error: string } | void> {
   const supabase = await createClient();
   const {
@@ -97,7 +98,7 @@ export async function upsertOshi(data: {
 
   revalidatePath("/");
   revalidatePath("/settings/oshi");
-  redirect("/");
+  redirect(data.redirectTo ?? "/");
 }
 
 export async function addRule(data: {
