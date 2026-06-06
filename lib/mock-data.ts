@@ -31,7 +31,7 @@ export const mockRecords: SavingRecord[] = [
     ruleId: "rule-2",
     trigger: "生配信",
     amount: 500,
-    savedAt: new Date("2026-06-03T21:30:00"),
+    savedAt: "2026-06-03T21:30:00",
   },
   {
     id: "rec-2",
@@ -39,7 +39,7 @@ export const mockRecords: SavingRecord[] = [
     ruleId: "rule-1",
     trigger: "SNS更新",
     amount: 100,
-    savedAt: new Date("2026-06-03T14:15:00"),
+    savedAt: "2026-06-03T14:15:00",
   },
   {
     id: "rec-3",
@@ -47,7 +47,7 @@ export const mockRecords: SavingRecord[] = [
     ruleId: "rule-4",
     trigger: "雑誌掲載",
     amount: 300,
-    savedAt: new Date("2026-06-02T10:00:00"),
+    savedAt: "2026-06-02T10:00:00",
   },
   {
     id: "rec-4",
@@ -55,7 +55,7 @@ export const mockRecords: SavingRecord[] = [
     ruleId: "rule-1",
     trigger: "SNS更新",
     amount: 100,
-    savedAt: new Date("2026-06-01T18:45:00"),
+    savedAt: "2026-06-01T18:45:00",
   },
   {
     id: "rec-5",
@@ -63,6 +63,6 @@ export const mockRecords: SavingRecord[] = [
     ruleId: "rule-3",
     trigger: "ライブ参戦",
     amount: 1000,
-    savedAt: new Date("2026-05-31T19:00:00"),
+    savedAt: "2026-05-31T19:00:00",
   },
 ];
