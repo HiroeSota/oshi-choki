@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { addRule, deleteRule, updateRule } from "@/app/actions";
-import type { SavingRule } from "@/lib/types";
+import type { Oshi, SavingRule } from "@/lib/types";
 
 const EMOJI_OPTIONS = ["📱", "🎙️", "🎤", "📖", "🎬", "🎵", "⭐", "🌸", "💝", "🎸", "📸", "🎪"];
 
@@ -11,6 +12,8 @@ type Props = {
   oshiId: string;
   memberColor: string;
   initialRules: SavingRule[];
+  allOshis: Oshi[];
+  selectedOshiId: string;
 };
 
 type EditState = {
@@ -20,7 +23,8 @@ type EditState = {
   emoji: string;
 };
 
-export function RulesManager({ oshiId, memberColor, initialRules }: Props) {
+export function RulesManager({ oshiId, memberColor, initialRules, allOshis, selectedOshiId }: Props) {
+  const router = useRouter();
   const [rules, setRules] = useState(initialRules);
   const [editState, setEditState] = useState<EditState | null>(null);
   const [newTrigger, setNewTrigger] = useState("");
@@ -107,6 +111,26 @@ export function RulesManager({ oshiId, memberColor, initialRules }: Props) {
           <h1 className="font-bold text-gray-800 text-base">貯金ルール設定</h1>
         </div>
       </header>
+
+      {/* 推し選択タブ（複数推しがいる場合のみ表示） */}
+      {allOshis.length > 1 && (
+        <div className="max-w-md mx-auto px-4 pt-3 flex gap-2 overflow-x-auto">
+          {allOshis.map((o) => (
+            <button
+              key={o.id}
+              type="button"
+              onClick={() => router.push(`/settings/rules?oshi_id=${o.id}`)}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all"
+              style={{
+                background: o.id === selectedOshiId ? o.memberColor : "#f3f4f6",
+                color: o.id === selectedOshiId ? "white" : "#6a7282",
+              }}
+            >
+              {o.emoji} {o.name}
+            </button>
+          ))}
+        </div>
+      )}
 
       <main className="max-w-md mx-auto px-4 pb-24 pt-4 space-y-4">
         {/* ルール一覧 */}

@@ -174,6 +174,29 @@ export async function uploadOshiImage(formData: FormData): Promise<{ url: string
   return { url: data.publicUrl };
 }
 
+export async function updateOshiOrder(
+  orderedIds: string[]
+): Promise<{ error: string } | void> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated" };
+
+  await Promise.all(
+    orderedIds.map((id, index) =>
+      supabase
+        .from("oshis")
+        .update({ display_order: index })
+        .eq("id", id)
+        .eq("user_id", user.id)
+    )
+  );
+
+  revalidatePath("/");
+  revalidatePath("/settings/oshi");
+}
+
 export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();

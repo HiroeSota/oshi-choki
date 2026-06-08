@@ -28,6 +28,7 @@ export default async function DashboardPage({
     .from("oshis")
     .select("*")
     .eq("user_id", user.id)
+    .order("display_order", { ascending: true })
     .returns<DbOshi[]>();
 
   if (!oshisData || oshisData.length === 0) redirect("/settings/oshi/new");

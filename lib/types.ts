@@ -42,6 +42,7 @@ export type DbOshi = {
   member_color: string;
   emoji: string;
   image_url?: string;
+  display_order: number;
 };
 
 export type DbSavingRule = {
