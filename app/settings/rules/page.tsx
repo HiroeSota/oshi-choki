@@ -53,6 +53,7 @@ export default async function RulesPage({
 
   return (
     <RulesManager
+      key={oshiData.id}
       oshiId={oshiData.id}
       memberColor={oshiData.member_color}
       initialRules={rules}
