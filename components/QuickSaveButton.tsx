@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useCoinSound } from "@/hooks/useCoinSound";
 import type { SavingRule } from "@/lib/types";
 
 type Props = {
@@ -11,10 +12,12 @@ type Props = {
 
 export function QuickSaveButton({ rule, memberColor, onSave }: Props) {
   const [isAnimating, setIsAnimating] = useState(false);
+  const { play } = useCoinSound();
 
   function handleTap() {
     if (isAnimating) return;
     setIsAnimating(true);
+    play();
     onSave(rule);
     setTimeout(() => setIsAnimating(false), 600);
   }
