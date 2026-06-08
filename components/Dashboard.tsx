@@ -20,6 +20,7 @@ type Props = {
 export function Dashboard({ oshi, goal, rules, records, allOshis }: Props) {
   const [isPending, startTransition] = useTransition();
   const [toast, setToast] = useState<number | null>(null);
+  const [showAchievement, setShowAchievement] = useState(false);
 
   const [optimisticGoal, addOptimisticAmount] = useOptimistic(
     goal,
@@ -30,16 +31,38 @@ export function Dashboard({ oshi, goal, rules, records, allOshis }: Props) {
   );
 
   function handleSave(rule: SavingRule) {
+    const wasAlreadyAchieved = optimisticGoal.currentAmount >= optimisticGoal.targetAmount;
     setToast(rule.amount);
     setTimeout(() => setToast(null), 1500);
     startTransition(async () => {
       addOptimisticAmount(rule.amount);
-      await saveMoney(rule, oshi.id);
+      const { achieved } = await saveMoney(rule, oshi.id);
+      if (achieved && !wasAlreadyAchieved) setShowAchievement(true);
     });
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {showAchievement && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white rounded-3xl p-8 mx-6 text-center shadow-2xl animate-modal-in">
+            <div className="text-6xl mb-4">🎉</div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">目標達成！</h2>
+            <p className="text-gray-500 mb-2">{goal.label}</p>
+            <p className="text-3xl font-bold mb-6" style={{ color: oshi.memberColor }}>
+              ¥{goal.targetAmount.toLocaleString()}
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowAchievement(false)}
+              className="w-full py-3 rounded-2xl font-bold text-white"
+              style={{ backgroundColor: oshi.memberColor }}
+            >
+              とじる
+            </button>
+          </div>
+        </div>
+      )}
       {/* ヘッダー */}
       <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-gray-100">
         <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">

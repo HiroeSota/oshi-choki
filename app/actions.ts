@@ -6,7 +6,10 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import type { SavingRule } from "@/lib/types";
 
-export async function saveMoney(rule: SavingRule, oshiId: string) {
+export async function saveMoney(
+  rule: SavingRule,
+  oshiId: string
+): Promise<{ achieved: boolean }> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -28,7 +31,17 @@ export async function saveMoney(rule: SavingRule, oshiId: string) {
   });
   if (goalError) throw new Error(goalError.message);
 
+  const { data: goalData } = await supabase
+    .from("saving_goals")
+    .select("current_amount, target_amount")
+    .eq("oshi_id", oshiId)
+    .single();
+
   revalidatePath("/");
+
+  return {
+    achieved: !!goalData && goalData.current_amount >= goalData.target_amount,
+  };
 }
 
 export async function upsertOshi(data: {
