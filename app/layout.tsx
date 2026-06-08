@@ -11,6 +11,19 @@ const notoSansJP = Noto_Sans_JP({
 export const metadata: Metadata = {
   title: "Oshi-Choki | 推し貯金アプリ",
   description: "推しの行動をトリガーに、一緒に夢を叶える推し貯金アプリ",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "推しチョキ",
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
+  },
+};
+
+export const viewport = {
+  themeColor: "#FF6B9D",
 };
 
 export default function RootLayout({
