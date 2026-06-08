@@ -130,7 +130,7 @@ export function Dashboard({ oshi, goal, rules, records, allOshis }: Props) {
         {/* トースト */}
         {toast !== null && (
           <div
-            className="fixed top-20 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-5 py-3 rounded-2xl text-white font-bold text-sm shadow-lg animate-fade-in-up whitespace-nowrap"
+            className="fixed top-20 inset-x-0 mx-auto w-fit z-50 flex items-center gap-3 px-5 py-3 rounded-2xl text-white font-bold text-sm shadow-lg animate-toast-in whitespace-nowrap"
             style={{ background: oshi.memberColor }}
           >
             <span>+{toast.amount.toLocaleString()}円 貯金したよ！</span>
