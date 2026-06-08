@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRef, useState, useTransition } from "react";
-import { uploadOshiImage, upsertOshi } from "@/app/actions";
+import { resetGoalAmount, uploadOshiImage, upsertOshi } from "@/app/actions";
 import type { Oshi, SavingGoal } from "@/lib/types";
 
 const PRESET_COLORS = [
@@ -305,6 +305,25 @@ export function OshiSettingsForm({ oshi, goal, backHref }: Props) {
             {isPending ? "保存中..." : isNew ? "推しを登録してはじめる 💝" : "変更を保存する"}
           </button>
         </form>
+
+        {/* リセット（編集時のみ表示） */}
+        {!isNew && oshi && (
+          <section className="mt-6 bg-white rounded-3xl p-5 shadow-sm">
+            <h2 className="font-bold text-gray-700 text-sm mb-1">貯金額のリセット</h2>
+            <p className="text-gray-400 text-xs mb-4">現在の貯金額を0円に戻します。履歴は残ります。</p>
+            <button
+              type="button"
+              disabled={isPending}
+              onClick={async () => {
+                if (!confirm(`${oshi.name} の貯金額を0円にリセットしますか？`)) return;
+                await resetGoalAmount(oshi.id);
+              }}
+              className="w-full py-3 rounded-2xl font-bold text-sm text-red-500 border-2 border-red-100 hover:bg-red-50 transition-colors"
+            >
+              貯金額をリセットする
+            </button>
+          </section>
+        )}
       </main>
 
     </div>

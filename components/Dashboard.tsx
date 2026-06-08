@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useOptimistic, useState, useTransition } from "react";
-import { saveMoney, signOut } from "@/app/actions";
+import { saveMoney, signOut, undoSave } from "@/app/actions";
 import { BottomNav } from "@/components/BottomNav";
 import { OshiCard } from "@/components/OshiCard";
 import { QuickSaveButton } from "@/components/QuickSaveButton";
@@ -19,7 +19,7 @@ type Props = {
 
 export function Dashboard({ oshi, goal, rules, records, allOshis }: Props) {
   const [isPending, startTransition] = useTransition();
-  const [toast, setToast] = useState<number | null>(null);
+  const [toast, setToast] = useState<{ amount: number; recordId: string } | null>(null);
   const [showAchievement, setShowAchievement] = useState(false);
 
   const [optimisticGoal, addOptimisticAmount] = useOptimistic(
@@ -32,12 +32,22 @@ export function Dashboard({ oshi, goal, rules, records, allOshis }: Props) {
 
   function handleSave(rule: SavingRule) {
     const wasAlreadyAchieved = optimisticGoal.currentAmount >= optimisticGoal.targetAmount;
-    setToast(rule.amount);
-    setTimeout(() => setToast(null), 1500);
     startTransition(async () => {
       addOptimisticAmount(rule.amount);
-      const { achieved } = await saveMoney(rule, oshi.id);
+      const { achieved, recordId } = await saveMoney(rule, oshi.id);
       if (achieved && !wasAlreadyAchieved) setShowAchievement(true);
+      setToast({ amount: rule.amount, recordId });
+      setTimeout(() => setToast(null), 5000);
+    });
+  }
+
+  function handleUndo() {
+    if (!toast) return;
+    const { amount, recordId } = toast;
+    setToast(null);
+    startTransition(async () => {
+      addOptimisticAmount(-amount);
+      await undoSave(recordId, oshi.id, amount);
     });
   }
 
@@ -120,10 +130,17 @@ export function Dashboard({ oshi, goal, rules, records, allOshis }: Props) {
         {/* トースト */}
         {toast !== null && (
           <div
-            className="fixed top-20 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 rounded-full text-white font-bold text-sm shadow-lg animate-fade-in-up"
+            className="fixed top-20 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-5 py-3 rounded-2xl text-white font-bold text-sm shadow-lg animate-fade-in-up whitespace-nowrap"
             style={{ background: oshi.memberColor }}
           >
-            +{toast.toLocaleString()}円 貯金したよ！
+            <span>+{toast.amount.toLocaleString()}円 貯金したよ！</span>
+            <button
+              type="button"
+              onClick={handleUndo}
+              className="text-white/80 text-xs border border-white/40 rounded-lg px-2 py-1 hover:bg-white/20 transition-colors"
+            >
+              取り消し
+            </button>
           </div>
         )}
 

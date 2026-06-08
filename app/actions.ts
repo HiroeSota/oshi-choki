@@ -9,21 +9,24 @@ import type { SavingRule } from "@/lib/types";
 export async function saveMoney(
   rule: SavingRule,
   oshiId: string
-): Promise<{ achieved: boolean }> {
+): Promise<{ achieved: boolean; recordId: string }> {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
 
-  const { error: recordError } = await supabase.from("saving_records").insert({
-    oshi_id: oshiId,
-    rule_id: rule.id,
-    trigger: rule.trigger,
-    amount: rule.amount,
-    user_id: user.id,
-  });
-  if (recordError) throw new Error(recordError.message);
+  const recordInsert = await supabase
+    .from("saving_records")
+    .insert({
+      oshi_id: oshiId,
+      rule_id: rule.id,
+      trigger: rule.trigger,
+      amount: rule.amount,
+      user_id: user.id,
+    })
+    .select("id");
+  if (recordInsert.error) throw new Error(recordInsert.error.message);
 
   const { error: goalError } = await supabase.rpc("increment_goal_amount", {
     p_oshi_id: oshiId,
@@ -41,6 +44,7 @@ export async function saveMoney(
 
   return {
     achieved: !!goalData && goalData.current_amount >= goalData.target_amount,
+    recordId: recordInsert.data?.[0]?.id ?? "",
   };
 }
 
@@ -185,6 +189,52 @@ export async function uploadOshiImage(formData: FormData): Promise<{ url: string
 
   const { data } = admin.storage.from("oshi-images").getPublicUrl(filePath);
   return { url: data.publicUrl };
+}
+
+export async function undoSave(
+  recordId: string,
+  oshiId: string,
+  amount: number
+): Promise<{ error: string } | void> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated" };
+
+  const { error: deleteError } = await supabase
+    .from("saving_records")
+    .delete()
+    .eq("id", recordId)
+    .eq("user_id", user.id);
+  if (deleteError) return { error: deleteError.message };
+
+  await supabase.rpc("increment_goal_amount", {
+    p_oshi_id: oshiId,
+    p_amount: -amount,
+  });
+
+  revalidatePath("/");
+}
+
+export async function resetGoalAmount(
+  oshiId: string
+): Promise<{ error: string } | void> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated" };
+
+  const { error } = await supabase
+    .from("saving_goals")
+    .update({ current_amount: 0 })
+    .eq("oshi_id", oshiId)
+    .eq("user_id", user.id);
+  if (error) return { error: error.message };
+
+  revalidatePath("/");
+  revalidatePath("/settings/oshi");
 }
 
 export async function updateOshiOrder(
