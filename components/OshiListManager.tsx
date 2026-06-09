@@ -61,10 +61,10 @@ export function OshiListManager({ oshis: initialOshis, goalsByOshiId }: Props) {
                   <img
                     src={o.image_url}
                     alt={o.name}
-                    className="w-14 h-14 rounded-2xl object-cover shadow"
+                    className="w-14 h-14 rounded-full object-cover shadow"
                   />
                 ) : (
-                  <div className="w-14 h-14 rounded-2xl bg-white/30 flex items-center justify-center text-3xl">
+                  <div className="w-14 h-14 rounded-full bg-white/30 flex items-center justify-center text-3xl">
                     🌸
                   </div>
                 )}

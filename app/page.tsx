@@ -67,6 +67,7 @@ export default async function DashboardPage({
     memberColor: oshiData.member_color,
     emoji: oshiData.emoji,
     imageUrl: oshiData.image_url,
+    congratulationMessage: oshiData.congratulation_message,
   };
 
   const allOshis: Oshi[] = oshisData.map((o) => ({
@@ -76,6 +77,7 @@ export default async function DashboardPage({
     memberColor: o.member_color,
     emoji: o.emoji,
     imageUrl: o.image_url,
+    congratulationMessage: o.congratulation_message,
   }));
 
   const rules: SavingRule[] = (rulesRes.data ?? []).map((r) => ({

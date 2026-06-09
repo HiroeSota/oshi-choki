@@ -5,6 +5,7 @@ export type Oshi = {
   memberColor: string;
   emoji: string;
   imageUrl?: string;
+  congratulationMessage?: string;
 };
 
 export type SavingRule = {
@@ -43,6 +44,7 @@ export type DbOshi = {
   emoji: string;
   image_url?: string;
   display_order: number;
+  congratulation_message?: string;
 };
 
 export type DbSavingRule = {

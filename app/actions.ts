@@ -54,6 +54,7 @@ export async function upsertOshi(data: {
   memberColor: string;
   emoji: string;
   imageUrl?: string;
+  congratulationMessage?: string;
   goalLabel: string;
   goalTarget: number;
   existingOshiId?: string;
@@ -77,6 +78,7 @@ export async function upsertOshi(data: {
         member_color: data.memberColor,
         emoji: data.emoji,
         image_url: data.imageUrl ?? null,
+        congratulation_message: data.congratulationMessage ?? null,
       })
       .eq("id", oshiId);
     if (error) return { error: error.message };
@@ -90,6 +92,7 @@ export async function upsertOshi(data: {
         member_color: data.memberColor,
         emoji: data.emoji,
         image_url: data.imageUrl ?? null,
+        congratulation_message: data.congratulationMessage ?? null,
       })
       .select()
       .single();

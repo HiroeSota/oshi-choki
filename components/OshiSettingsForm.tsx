@@ -22,6 +22,7 @@ export function OshiSettingsForm({ oshi, goal, backHref }: Props) {
   const [group, setGroup] = useState(oshi?.group ?? "");
   const [color, setColor] = useState(oshi?.memberColor ?? "#FF6B9D");
   const [imageUrl, setImageUrl] = useState(oshi?.imageUrl ?? "");
+  const [congratulationMessage, setCongratulationMessage] = useState(oshi?.congratulationMessage ?? "");
   const [uploading, setUploading] = useState(false);
   const [goalLabel, setGoalLabel] = useState(goal?.label ?? "");
   const [goalTarget, setGoalTarget] = useState(goal?.targetAmount?.toString() ?? "");
@@ -107,6 +108,7 @@ export function OshiSettingsForm({ oshi, goal, backHref }: Props) {
         memberColor: color,
         emoji: "🌸",
         imageUrl: imageUrl || undefined,
+        congratulationMessage: congratulationMessage || undefined,
         goalLabel,
         goalTarget: target,
         existingOshiId: oshi?.id,
@@ -163,10 +165,10 @@ export function OshiSettingsForm({ oshi, goal, backHref }: Props) {
                   <img
                     src={imageUrl}
                     alt="推しの画像"
-                    className="w-20 h-20 rounded-2xl object-cover shadow-sm"
+                    className="w-20 h-20 rounded-full object-cover shadow-sm"
                   />
                 ) : (
-                  <div className="w-20 h-20 rounded-2xl bg-gray-100 flex items-center justify-center text-3xl">
+                  <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center text-3xl">
                     📷
                   </div>
                 )}
@@ -255,6 +257,23 @@ export function OshiSettingsForm({ oshi, goal, backHref }: Props) {
                 推し
               </div>
             </div>
+          </section>
+
+          {/* 目標達成セリフ */}
+          <section className="bg-white rounded-3xl p-5 shadow-sm space-y-3">
+            <h2 className="font-bold text-gray-700 text-sm flex items-center gap-2">
+              <span>💬</span> 目標達成セリフ（任意）
+            </h2>
+            <p className="text-xs text-gray-400">達成モーダルに推しのセリフを表示します</p>
+            <textarea
+              value={congratulationMessage}
+              onChange={(e) => setCongratulationMessage(e.target.value)}
+              maxLength={60}
+              rows={2}
+              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-pink-300 text-sm resize-none"
+              placeholder="例: いつも応援ありがとう！一緒に夢を叶えようね！"
+            />
+            <p className="text-xs text-gray-400 text-right">{congratulationMessage.length}/60</p>
           </section>
 
           {/* 目標設定 */}

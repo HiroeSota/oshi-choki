@@ -59,9 +59,18 @@ export function Dashboard({ oshi, goal, rules, records, allOshis }: Props) {
             <div className="text-6xl mb-4">🎉</div>
             <h2 className="text-2xl font-bold text-gray-800 mb-2">目標達成！</h2>
             <p className="text-gray-500 mb-2">{goal.label}</p>
-            <p className="text-3xl font-bold mb-6" style={{ color: oshi.memberColor }}>
+            <p className="text-3xl font-bold mb-4" style={{ color: oshi.memberColor }}>
               ¥{goal.targetAmount.toLocaleString()}
             </p>
+            {oshi.congratulationMessage && (
+              <div
+                className="rounded-2xl px-4 py-3 mb-6 text-sm font-medium text-white"
+                style={{ backgroundColor: oshi.memberColor }}
+              >
+                <span className="block text-xs opacity-80 mb-1">{oshi.name}より</span>
+                「{oshi.congratulationMessage}」
+              </div>
+            )}
             <button
               type="button"
               onClick={() => setShowAchievement(false)}
