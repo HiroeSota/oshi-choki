@@ -126,24 +126,29 @@ export async function addRule(data: {
   trigger: string;
   amount: number;
   emoji: string;
-}): Promise<{ error: string } | void> {
+}): Promise<{ error: string } | { id: string }> {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { error: "Not authenticated" };
 
-  const { error } = await supabase.from("saving_rules").insert({
-    user_id: user.id,
-    oshi_id: data.oshiId,
-    trigger: data.trigger,
-    amount: data.amount,
-    emoji: data.emoji,
-  });
+  const { data: newRule, error } = await supabase
+    .from("saving_rules")
+    .insert({
+      user_id: user.id,
+      oshi_id: data.oshiId,
+      trigger: data.trigger,
+      amount: data.amount,
+      emoji: data.emoji,
+    })
+    .select("id")
+    .single();
   if (error) return { error: error.message };
 
   revalidatePath("/settings/rules");
   revalidatePath("/");
+  return { id: newRule.id };
 }
 
 export async function updateRule(

@@ -10,14 +10,15 @@ export default async function StatsPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: oshiData } = await supabase
+  const { data: oshisData } = await supabase
     .from("oshis")
     .select("*")
     .eq("user_id", user.id)
-    .returns<DbOshi[]>()
-    .maybeSingle();
+    .order("display_order", { ascending: true })
+    .returns<DbOshi[]>();
 
-  if (!oshiData) redirect("/settings/oshi");
+  if (!oshisData || oshisData.length === 0) redirect("/settings/oshi");
+  const oshiData = oshisData[0];
 
   const { data: recordsData } = await supabase
     .from("saving_records")

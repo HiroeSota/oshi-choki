@@ -74,14 +74,20 @@ export function StatsView({ memberColor, oshiName, oshiEmoji, records }: Props) 
   const triggerData = buildTriggerData(records);
   const maxTriggerAmount = triggerData[0]?.amount ?? 1;
 
-  const thisMonth = new Date().getMonth();
+  const now = new Date();
   const thisMonthTotal = records
-    .filter((r) => new Date(r.savedAt).getMonth() === thisMonth)
+    .filter((r) => {
+      const d = new Date(r.savedAt);
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    })
     .reduce((s, r) => s + r.amount, 0);
 
-  const lastMonth = thisMonth === 0 ? 11 : thisMonth - 1;
+  const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
   const lastMonthTotal = records
-    .filter((r) => new Date(r.savedAt).getMonth() === lastMonth)
+    .filter((r) => {
+      const d = new Date(r.savedAt);
+      return d.getMonth() === lastMonthDate.getMonth() && d.getFullYear() === lastMonthDate.getFullYear();
+    })
     .reduce((s, r) => s + r.amount, 0);
 
   const diff = thisMonthTotal - lastMonthTotal;

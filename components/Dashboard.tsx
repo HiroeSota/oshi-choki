@@ -242,7 +242,11 @@ export function Dashboard({ oshi, goal, rules, records, allOshis }: Props) {
             {
               label: "今月",
               value: `${records
-                .filter((r) => new Date(r.savedAt).getMonth() === new Date().getMonth())
+                .filter((r) => {
+                  const d = new Date(r.savedAt);
+                  const now = new Date();
+                  return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+                })
                 .reduce((s, r) => s + r.amount, 0)
                 .toLocaleString()}円`,
               emoji: "📅",

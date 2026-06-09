@@ -44,13 +44,13 @@ export function RulesManager({ oshiId, memberColor, initialRules, allOshis, sele
 
     startTransition(async () => {
       const result = await addRule({ oshiId, trigger: newTrigger, amount, emoji: newEmoji });
-      if (result && "error" in result) {
+      if ("error" in result) {
         setError(result.error);
         return;
       }
       setRules((prev) => [
         ...prev,
-        { id: Date.now().toString(), oshiId, trigger: newTrigger, amount, emoji: newEmoji },
+        { id: result.id, oshiId, trigger: newTrigger, amount, emoji: newEmoji },
       ]);
       setNewTrigger("");
       setNewAmount("");

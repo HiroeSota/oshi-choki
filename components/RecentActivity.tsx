@@ -34,6 +34,9 @@ export function RecentActivity({ records, memberColor }: Props) {
         <span>📋</span>
         最近の推し貯金
       </h3>
+      {records.length === 0 && (
+        <p className="text-gray-400 text-sm text-center py-4">まだ貯金記録がありません</p>
+      )}
       <ul className="space-y-3">
         {records.map((record) => (
           <li key={record.id} className="flex items-center justify-between">
