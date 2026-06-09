@@ -110,16 +110,30 @@ export function Dashboard({ oshi, goal, rules, records, allOshis }: Props) {
                   href={`/?oshi_id=${o.id}`}
                   className="flex flex-col items-center gap-1 flex-shrink-0"
                 >
-                  <div
-                    className="w-8 h-8 rounded-full transition-all"
-                    style={{
-                      background: o.memberColor,
-                      boxShadow: isSelected
-                        ? `0 0 0 2px white, 0 0 0 4px ${o.memberColor}`
-                        : "none",
-                      opacity: isSelected ? 1 : 0.6,
-                    }}
-                  />
+                  {o.imageUrl ? (
+                    <img
+                      src={o.imageUrl}
+                      alt={o.name}
+                      className="w-8 h-8 rounded-full object-cover transition-all"
+                      style={{
+                        boxShadow: isSelected
+                          ? `0 0 0 2px white, 0 0 0 4px ${o.memberColor}`
+                          : "none",
+                        opacity: isSelected ? 1 : 0.6,
+                      }}
+                    />
+                  ) : (
+                    <div
+                      className="w-8 h-8 rounded-full transition-all"
+                      style={{
+                        background: o.memberColor,
+                        boxShadow: isSelected
+                          ? `0 0 0 2px white, 0 0 0 4px ${o.memberColor}`
+                          : "none",
+                        opacity: isSelected ? 1 : 0.6,
+                      }}
+                    />
+                  )}
                   <span
                     className="text-xs leading-tight max-w-[3rem] text-center truncate"
                     style={{ color: isSelected ? o.memberColor : "#9ca3af" }}
