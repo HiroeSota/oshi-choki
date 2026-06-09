@@ -40,6 +40,7 @@ export default async function EditOshiPage({
     memberColor: oshiData.member_color,
     emoji: oshiData.emoji,
     imageUrl: oshiData.image_url,
+    congratulationMessage: oshiData.congratulation_message,
   };
 
   const goal: SavingGoal | null = goalData
