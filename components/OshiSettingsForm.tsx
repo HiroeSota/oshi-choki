@@ -23,6 +23,7 @@ export function OshiSettingsForm({ oshi, goal, backHref }: Props) {
   const [color, setColor] = useState(oshi?.memberColor ?? "#FF6B9D");
   const [imageUrl, setImageUrl] = useState(oshi?.imageUrl ?? "");
   const [congratulationMessage, setCongratulationMessage] = useState(oshi?.congratulationMessage ?? "");
+  const [isEditingMessage, setIsEditingMessage] = useState(!oshi?.congratulationMessage);
   const [uploading, setUploading] = useState(false);
   const [goalLabel, setGoalLabel] = useState(goal?.label ?? "");
   const [goalTarget, setGoalTarget] = useState(goal?.targetAmount?.toString() ?? "");
@@ -262,18 +263,33 @@ export function OshiSettingsForm({ oshi, goal, backHref }: Props) {
           {/* 目標達成セリフ */}
           <section className="bg-white rounded-3xl p-5 shadow-sm space-y-3">
             <h2 className="font-bold text-gray-700 text-sm flex items-center gap-2">
-              <span>💬</span> 目標達成セリフ（任意）
+              <span>💌</span> 推しからの達成セリフ（任意）
             </h2>
-            <p className="text-xs text-gray-400">達成モーダルに推しのセリフを表示します</p>
-            <textarea
-              value={congratulationMessage}
-              onChange={(e) => setCongratulationMessage(e.target.value)}
-              maxLength={60}
-              rows={2}
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-pink-300 text-sm resize-none"
-              placeholder="例: いつも応援ありがとう！一緒に夢を叶えようね！"
-            />
-            <p className="text-xs text-gray-400 text-right">{congratulationMessage.length}/60</p>
+            {isEditingMessage ? (
+              <>
+                <p className="text-xs text-gray-400">目標達成まで非表示。タイムカプセルのように書いて封印しよう！</p>
+                <textarea
+                  value={congratulationMessage}
+                  onChange={(e) => setCongratulationMessage(e.target.value)}
+                  maxLength={60}
+                  rows={2}
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-pink-300 text-sm resize-none"
+                  placeholder="例: いつも応援ありがとう！一緒に夢を叶えようね！"
+                />
+                <p className="text-xs text-gray-400 text-right">{congratulationMessage.length}/60</p>
+              </>
+            ) : (
+              <div className="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3">
+                <span className="text-sm text-gray-600">✅ セリフ封印済み 🔒</span>
+                <button
+                  type="button"
+                  onClick={() => setIsEditingMessage(true)}
+                  className="text-xs font-medium text-pink-400 hover:text-pink-500"
+                >
+                  変更する
+                </button>
+              </div>
+            )}
           </section>
 
           {/* 目標設定 */}

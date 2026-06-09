@@ -17,10 +17,19 @@ type Props = {
   allOshis: Oshi[];
 };
 
+const MILESTONES = [
+  { pct: 30, emoji: "🌱", text: "いい調子！この調子でいこう！" },
+  { pct: 50, emoji: "🎯", text: "折り返し地点！あと半分！" },
+  { pct: 80, emoji: "🔥", text: "あと少し！もうすぐ達成！" },
+] as const;
+
+type Milestone = typeof MILESTONES[number];
+
 export function Dashboard({ oshi, goal, rules, records, allOshis }: Props) {
   const [isPending, startTransition] = useTransition();
   const [toast, setToast] = useState<{ amount: number; recordId: string } | null>(null);
   const [showAchievement, setShowAchievement] = useState(false);
+  const [milestone, setMilestone] = useState<Milestone | null>(null);
 
   const [optimisticGoal, addOptimisticAmount] = useOptimistic(
     goal,
@@ -32,10 +41,21 @@ export function Dashboard({ oshi, goal, rules, records, allOshis }: Props) {
 
   function handleSave(rule: SavingRule) {
     const wasAlreadyAchieved = optimisticGoal.currentAmount >= optimisticGoal.targetAmount;
+    const prevPct = (optimisticGoal.currentAmount / optimisticGoal.targetAmount) * 100;
+    const nextPct = ((optimisticGoal.currentAmount + rule.amount) / optimisticGoal.targetAmount) * 100;
+    const crossedMilestone = !wasAlreadyAchieved
+      ? (MILESTONES.find((m) => prevPct < m.pct && nextPct >= m.pct) ?? null)
+      : null;
+
     startTransition(async () => {
       addOptimisticAmount(rule.amount);
       const { achieved, recordId } = await saveMoney(rule, oshi.id);
-      if (achieved && !wasAlreadyAchieved) setShowAchievement(true);
+      if (achieved && !wasAlreadyAchieved) {
+        setShowAchievement(true);
+      } else if (crossedMilestone) {
+        setMilestone(crossedMilestone);
+        setTimeout(() => setMilestone(null), 4000);
+      }
       setToast({ amount: rule.amount, recordId });
       setTimeout(() => setToast(null), 5000);
     });
@@ -82,6 +102,26 @@ export function Dashboard({ oshi, goal, rules, records, allOshis }: Props) {
           </div>
         </div>
       )}
+      {milestone && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-3xl p-7 mx-6 text-center shadow-2xl animate-modal-in">
+            <div className="text-5xl mb-3">{milestone.emoji}</div>
+            <p className="text-2xl font-bold mb-1" style={{ color: oshi.memberColor }}>
+              {milestone.pct}% 達成！
+            </p>
+            <p className="text-gray-500 text-sm mb-5">{milestone.text}</p>
+            <button
+              type="button"
+              onClick={() => setMilestone(null)}
+              className="w-full py-3 rounded-2xl font-bold text-white"
+              style={{ backgroundColor: oshi.memberColor }}
+            >
+              やったー！
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* ヘッダー */}
       <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-gray-100">
         <div className="max-w-md mx-auto px-4 h-14 flex items-center justify-between">
