@@ -26,9 +26,11 @@ export function QuickSaveButton({ rule, memberColor, onSave }: Props) {
     <button
       type="button"
       onClick={handleTap}
-      className="relative flex flex-col items-center gap-2 rounded-2xl p-4 bg-white border-2 transition-all duration-150 active:scale-95 shadow-sm hover:shadow-md cursor-pointer w-full"
+      className="relative flex flex-col items-center gap-2 rounded-2xl p-4 border-2 transition-all duration-150 active:scale-95 cursor-pointer w-full"
       style={{
-        borderColor: isAnimating ? memberColor : "#f0f0f0",
+        background: isAnimating ? `${memberColor}22` : `${memberColor}0d`,
+        borderColor: isAnimating ? memberColor : `${memberColor}44`,
+        boxShadow: isAnimating ? `0 4px 16px ${memberColor}33` : `0 2px 8px ${memberColor}15`,
       }}
     >
       {/* +金額 アニメーション */}

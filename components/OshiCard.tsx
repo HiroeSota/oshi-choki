@@ -63,11 +63,18 @@ export function OshiCard({ oshi, goal, totalSaved }: Props) {
             </span>
             <span className="text-white font-bold text-sm">{progressPct}%</span>
           </div>
-          <div className="h-2.5 bg-white/30 rounded-full overflow-hidden">
+          <div className="h-2.5 bg-white/30 rounded-full overflow-hidden relative">
             <div
               className="h-full rounded-full bg-white transition-all duration-700 ease-out"
               style={{ width: `${progressPct}%` }}
             />
+            {[30, 50, 80].map((pct) => (
+              <div
+                key={pct}
+                className="absolute top-0 bottom-0 w-px bg-white/40"
+                style={{ left: `${pct}%` }}
+              />
+            ))}
           </div>
           <div className="flex justify-between mt-1.5">
             <span className="text-white/60 text-xs">0円</span>

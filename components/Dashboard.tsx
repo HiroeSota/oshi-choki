@@ -258,10 +258,13 @@ export function Dashboard({ oshi, goal, rules, records, allOshis }: Props) {
               emoji: "📊",
             },
           ].map((stat) => (
-            <div key={stat.label} className="bg-white rounded-2xl p-4 shadow-sm text-center">
-              <div className="text-xl mb-1">{stat.emoji}</div>
-              <div className="font-bold text-gray-800 text-sm">{stat.value}</div>
-              <div className="text-gray-400 text-xs mt-0.5">{stat.label}</div>
+            <div key={stat.label} className="bg-white rounded-2xl shadow-sm text-center overflow-hidden">
+              <div className="h-1 w-full" style={{ background: `linear-gradient(90deg, ${oshi.memberColor}99, ${oshi.memberColor}44)` }} />
+              <div className="p-4 pt-3">
+                <div className="text-xl mb-1">{stat.emoji}</div>
+                <div className="font-bold text-gray-800 text-sm">{stat.value}</div>
+                <div className="text-gray-400 text-xs mt-0.5">{stat.label}</div>
+              </div>
             </div>
           ))}
         </section>

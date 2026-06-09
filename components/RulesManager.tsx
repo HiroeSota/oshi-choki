@@ -126,7 +126,12 @@ export function RulesManager({ oshiId, memberColor, initialRules, allOshis, sele
                 color: o.id === selectedOshiId ? "white" : "#6a7282",
               }}
             >
-              {o.emoji} {o.name}
+              {o.imageUrl ? (
+                <img src={o.imageUrl} alt={o.name} className="w-5 h-5 rounded-full object-cover" />
+              ) : (
+                <span>{o.emoji}</span>
+              )}
+              {o.name}
             </button>
           ))}
         </div>
