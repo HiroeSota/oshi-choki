@@ -133,6 +133,11 @@ export async function addRule(data: {
   } = await supabase.auth.getUser();
   if (!user) return { error: "Not authenticated" };
 
+  const { count } = await supabase
+    .from("saving_rules")
+    .select("*", { count: "exact", head: true })
+    .eq("oshi_id", data.oshiId);
+
   const { data: newRule, error } = await supabase
     .from("saving_rules")
     .insert({
@@ -141,6 +146,7 @@ export async function addRule(data: {
       trigger: data.trigger,
       amount: data.amount,
       emoji: data.emoji,
+      display_order: count ?? 0,
     })
     .select("id")
     .single();
@@ -243,6 +249,29 @@ export async function resetGoalAmount(
 
   revalidatePath("/");
   revalidatePath("/settings/oshi");
+}
+
+export async function updateRuleOrder(
+  orderedIds: string[]
+): Promise<{ error: string } | void> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated" };
+
+  await Promise.all(
+    orderedIds.map((id, index) =>
+      supabase
+        .from("saving_rules")
+        .update({ display_order: index })
+        .eq("id", id)
+        .eq("user_id", user.id)
+    )
+  );
+
+  revalidatePath("/settings/rules");
+  revalidatePath("/");
 }
 
 export async function updateOshiOrder(

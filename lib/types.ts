@@ -14,6 +14,7 @@ export type SavingRule = {
   trigger: string;
   amount: number;
   emoji: string;
+  displayOrder: number;
 };
 
 export type SavingRecord = {
@@ -54,6 +55,7 @@ export type DbSavingRule = {
   trigger: string;
   amount: number;
   emoji: string;
+  display_order: number;
   created_at: string;
 };
 

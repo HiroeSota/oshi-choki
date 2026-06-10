@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { addRule, deleteRule, updateRule } from "@/app/actions";
+import { addRule, deleteRule, updateRule, updateRuleOrder } from "@/app/actions";
 import type { Oshi, SavingRule } from "@/lib/types";
 
 const EMOJI_OPTIONS = ["📱", "🎙️", "🎤", "📖", "🎬", "🎵", "⭐", "🌸", "💝", "🎸", "📸", "🎪"];
@@ -50,11 +50,21 @@ export function RulesManager({ oshiId, memberColor, initialRules, allOshis, sele
       }
       setRules((prev) => [
         ...prev,
-        { id: result.id, oshiId, trigger: newTrigger, amount, emoji: newEmoji },
+        { id: result.id, oshiId, trigger: newTrigger, amount, emoji: newEmoji, displayOrder: prev.length },
       ]);
       setNewTrigger("");
       setNewAmount("");
       setNewEmoji("📱");
+    });
+  }
+
+  function handleMove(index: number, direction: "up" | "down") {
+    const newRules = [...rules];
+    const swapIndex = direction === "up" ? index - 1 : index + 1;
+    [newRules[index], newRules[swapIndex]] = [newRules[swapIndex], newRules[index]];
+    setRules(newRules);
+    startTransition(async () => {
+      await updateRuleOrder(newRules.map((r) => r.id));
     });
   }
 
@@ -150,7 +160,7 @@ export function RulesManager({ oshiId, memberColor, initialRules, allOshis, sele
             </p>
           ) : (
             <ul className="space-y-2">
-              {rules.map((rule) =>
+              {rules.map((rule, index) =>
                 editState?.id === rule.id ? (
                   // 編集モード
                   <li
@@ -211,8 +221,29 @@ export function RulesManager({ oshiId, memberColor, initialRules, allOshis, sele
                   // 表示モード
                   <li
                     key={rule.id}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-2xl hover:bg-gray-50 transition-colors"
+                    className="flex items-center gap-2 px-3 py-2.5 rounded-2xl hover:bg-gray-50 transition-colors"
                   >
+                    {/* 並び替えボタン */}
+                    {rules.length > 1 && (
+                      <div className="flex flex-col gap-0.5 flex-shrink-0">
+                        <button
+                          type="button"
+                          disabled={index === 0 || isPending}
+                          onClick={() => handleMove(index, "up")}
+                          className="w-6 h-6 rounded-md text-gray-300 text-xs flex items-center justify-center disabled:opacity-20 hover:bg-gray-100 hover:text-gray-500 transition-colors touch-manipulation"
+                        >
+                          ↑
+                        </button>
+                        <button
+                          type="button"
+                          disabled={index === rules.length - 1 || isPending}
+                          onClick={() => handleMove(index, "down")}
+                          className="w-6 h-6 rounded-md text-gray-300 text-xs flex items-center justify-center disabled:opacity-20 hover:bg-gray-100 hover:text-gray-500 transition-colors touch-manipulation"
+                        >
+                          ↓
+                        </button>
+                      </div>
+                    )}
                     <div
                       className="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0"
                       style={{ background: `${memberColor}18` }}

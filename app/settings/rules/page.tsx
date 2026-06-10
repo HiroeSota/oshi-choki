@@ -40,7 +40,7 @@ export default async function RulesPage({
     .from("saving_rules")
     .select("*")
     .eq("oshi_id", oshiData.id)
-    .order("created_at", { ascending: true })
+    .order("display_order", { ascending: true })
     .returns<DbSavingRule[]>();
 
   const rules: SavingRule[] = (rulesData ?? []).map((r) => ({
@@ -49,6 +49,7 @@ export default async function RulesPage({
     trigger: r.trigger,
     amount: r.amount,
     emoji: r.emoji,
+    displayOrder: r.display_order,
   }));
 
   return (

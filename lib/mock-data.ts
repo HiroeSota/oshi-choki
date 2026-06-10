@@ -9,10 +9,10 @@ export const mockOshi: Oshi = {
 };
 
 export const mockRules: SavingRule[] = [
-  { id: "rule-1", oshiId: "oshi-1", trigger: "SNS更新", amount: 100, emoji: "📱" },
-  { id: "rule-2", oshiId: "oshi-1", trigger: "生配信", amount: 500, emoji: "🎙️" },
-  { id: "rule-3", oshiId: "oshi-1", trigger: "ライブ参戦", amount: 1000, emoji: "🎤" },
-  { id: "rule-4", oshiId: "oshi-1", trigger: "雑誌掲載", amount: 300, emoji: "📖" },
+  { id: "rule-1", oshiId: "oshi-1", trigger: "SNS更新", amount: 100, emoji: "📱", displayOrder: 0 },
+  { id: "rule-2", oshiId: "oshi-1", trigger: "生配信", amount: 500, emoji: "🎙️", displayOrder: 1 },
+  { id: "rule-3", oshiId: "oshi-1", trigger: "ライブ参戦", amount: 1000, emoji: "🎤", displayOrder: 2 },
+  { id: "rule-4", oshiId: "oshi-1", trigger: "雑誌掲載", amount: 300, emoji: "📖", displayOrder: 3 },
 ];
 
 export const mockGoal: SavingGoal = {

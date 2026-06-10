@@ -86,6 +86,7 @@ export default async function DashboardPage({
     trigger: r.trigger,
     amount: r.amount,
     emoji: r.emoji,
+    displayOrder: r.display_order,
   }));
 
   const goal: SavingGoal = {
