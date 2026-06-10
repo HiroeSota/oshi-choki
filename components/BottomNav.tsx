@@ -9,6 +9,7 @@ type Props = {
 
 const NAV_ITEMS = [
   { icon: "🏠", label: "ホーム", href: "/" },
+  { icon: "📜", label: "履歴", href: "/history" },
   { icon: "⭐", label: "推し設定", href: "/settings/oshi" },
   { icon: "📋", label: "ルール", href: "/settings/rules" },
   { icon: "📈", label: "統計", href: "/stats" },
@@ -33,7 +34,7 @@ export function BottomNav({ memberColor }: Props) {
             <Link
               key={item.href}
               href={item.href}
-              className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-2xl transition-all duration-200 active:scale-75 select-none"
+              className="flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-2xl transition-all duration-200 active:scale-75 select-none touch-manipulation"
               style={{
                 background: isActive
                   ? `linear-gradient(135deg, ${memberColor}ee, ${memberColor}99)`
