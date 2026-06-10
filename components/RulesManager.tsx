@@ -177,15 +177,15 @@ export function RulesManager({ oshiId, memberColor, initialRules, allOshis, sele
                           placeholder="きっかけ"
                         />
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center rounded-xl border border-gray-200 overflow-hidden">
                         <input
                           type="number"
                           value={editState.amount}
                           onChange={(e) => setEditState({ ...editState, amount: e.target.value })}
-                          className="flex-1 px-3 py-1.5 rounded-xl border border-gray-200 text-sm focus:outline-none"
+                          className="flex-1 min-w-0 px-3 py-1.5 text-sm focus:outline-none bg-transparent"
                           placeholder="金額"
                         />
-                        <span className="text-xs text-gray-500 flex-shrink-0">円</span>
+                        <span className="pr-3 text-xs text-gray-400 flex-shrink-0">円</span>
                       </div>
                     </div>
                     <div className="flex gap-2 justify-end">
@@ -296,17 +296,17 @@ export function RulesManager({ oshiId, memberColor, initialRules, allOshis, sele
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-500 mb-1.5">貯金額</label>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center rounded-xl border border-gray-200 overflow-hidden focus-within:border-pink-300">
                 <input
                   type="number"
                   required
                   min="1"
                   value={newAmount}
                   onChange={(e) => setNewAmount(e.target.value)}
-                  className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:border-pink-300 text-sm"
+                  className="flex-1 min-w-0 px-4 py-2.5 focus:outline-none text-sm bg-transparent"
                   placeholder="100"
                 />
-                <span className="text-sm text-gray-500 font-medium">円</span>
+                <span className="pr-4 text-sm text-gray-400 flex-shrink-0">円</span>
               </div>
             </div>
 
