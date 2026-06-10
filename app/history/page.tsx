@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { HistoryView } from "@/components/HistoryView";
 import { createClient } from "@/lib/supabase/server";
-import type { DbOshi, DbSavingRecord, DbSavingRule, Oshi, SavingRecord } from "@/lib/types";
+import type { DbOshi, DbSavingGoal, DbSavingRecord, DbSavingRule, Oshi, SavingRecord } from "@/lib/types";
 
 export default async function HistoryPage({
   searchParams,
@@ -35,7 +35,7 @@ export default async function HistoryPage({
     imageUrl: o.image_url,
   }));
 
-  const [{ data: recordsData }, { data: rulesData }] = await Promise.all([
+  const [{ data: recordsData }, { data: rulesData }, { data: goalData }] = await Promise.all([
     supabase
       .from("saving_records")
       .select("*")
@@ -47,6 +47,12 @@ export default async function HistoryPage({
       .select("*")
       .eq("oshi_id", oshiData.id)
       .returns<DbSavingRule[]>(),
+    supabase
+      .from("saving_goals")
+      .select("current_amount")
+      .eq("oshi_id", oshiData.id)
+      .maybeSingle()
+      .returns<Pick<DbSavingGoal, "current_amount">>(),
   ]);
 
   const ruleEmojiMap: Record<string, string> = {};
@@ -71,6 +77,7 @@ export default async function HistoryPage({
       memberColor={oshiData.member_color}
       allOshis={allOshis}
       selectedOshiId={oshiData.id}
+      currentAmount={goalData?.current_amount ?? 0}
     />
   );
 }

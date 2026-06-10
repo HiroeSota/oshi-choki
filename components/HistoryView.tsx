@@ -54,12 +54,12 @@ type Props = {
   memberColor: string;
   allOshis: Oshi[];
   selectedOshiId: string;
+  currentAmount: number;
 };
 
-export function HistoryView({ records, memberColor, allOshis, selectedOshiId }: Props) {
+export function HistoryView({ records, memberColor, allOshis, selectedOshiId, currentAmount }: Props) {
   const router = useRouter();
   const dayGroups = groupByDay(records);
-  const grandTotal = records.reduce((sum, r) => sum + r.amount, 0);
 
   // 最新日だけ初期展開
   const [openKeys, setOpenKeys] = useState<Set<string>>(
@@ -122,12 +122,12 @@ export function HistoryView({ records, memberColor, allOshis, selectedOshiId }: 
           className="rounded-3xl p-5"
           style={{ background: `linear-gradient(135deg, ${memberColor}ee, ${memberColor}99)` }}
         >
-          <p className="text-white/80 text-xs font-medium mb-1">累計貯金額</p>
+          <p className="text-white/80 text-xs font-medium mb-1">現在の推し貯金</p>
           <p className="text-white text-3xl font-bold">
-            {grandTotal.toLocaleString()}
+            {currentAmount.toLocaleString()}
             <span className="text-lg ml-1">円</span>
           </p>
-          <p className="text-white/70 text-xs mt-1">{records.length}回の貯金</p>
+          <p className="text-white/70 text-xs mt-1">全{records.length}件の記録</p>
         </div>
 
         {/* 履歴リスト */}
