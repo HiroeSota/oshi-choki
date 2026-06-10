@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import type { Oshi, SavingRecord } from "@/lib/types";
 
 type RecordWithEmoji = SavingRecord & { emoji: string };
@@ -60,6 +61,23 @@ export function HistoryView({ records, memberColor, allOshis, selectedOshiId }: 
   const dayGroups = groupByDay(records);
   const grandTotal = records.reduce((sum, r) => sum + r.amount, 0);
 
+  // 最新日だけ初期展開
+  const [openKeys, setOpenKeys] = useState<Set<string>>(
+    () => new Set(dayGroups.length > 0 ? [dayGroups[0].dateKey] : [])
+  );
+
+  function toggleGroup(dateKey: string) {
+    setOpenKeys((prev) => {
+      const next = new Set(prev);
+      if (next.has(dateKey)) {
+        next.delete(dateKey);
+      } else {
+        next.add(dateKey);
+      }
+      return next;
+    });
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-gray-100">
@@ -102,9 +120,7 @@ export function HistoryView({ records, memberColor, allOshis, selectedOshiId }: 
         {/* 累計バナー */}
         <div
           className="rounded-3xl p-5"
-          style={{
-            background: `linear-gradient(135deg, ${memberColor}ee, ${memberColor}99)`,
-          }}
+          style={{ background: `linear-gradient(135deg, ${memberColor}ee, ${memberColor}99)` }}
         >
           <p className="text-white/80 text-xs font-medium mb-1">累計貯金額</p>
           <p className="text-white text-3xl font-bold">
@@ -121,35 +137,63 @@ export function HistoryView({ records, memberColor, allOshis, selectedOshiId }: 
             <p className="text-gray-400 text-sm">まだ貯金記録がありません</p>
           </div>
         ) : (
-          dayGroups.map((group) => (
-            <section key={group.dateKey} className="bg-white rounded-3xl shadow-sm overflow-hidden">
-              <div className="flex items-center justify-between px-5 py-3 border-b border-gray-50">
-                <span className="text-sm font-bold text-gray-700">{group.label}</span>
-                <span className="text-sm font-bold" style={{ color: memberColor }}>
-                  +{group.total.toLocaleString()}円
-                </span>
-              </div>
-              <ul className="divide-y divide-gray-50">
-                {group.records.map((record) => (
-                  <li key={record.id} className="flex items-center gap-3 px-5 py-3">
-                    <div
-                      className="w-9 h-9 rounded-xl flex items-center justify-center text-base flex-shrink-0"
-                      style={{ background: `${memberColor}18` }}
+          dayGroups.map((group) => {
+            const isOpen = openKeys.has(group.dateKey);
+            return (
+              <section key={group.dateKey} className="bg-white rounded-3xl shadow-sm overflow-hidden">
+                {/* 日付ヘッダー（タップで開閉） */}
+                <button
+                  type="button"
+                  onClick={() => toggleGroup(group.dateKey)}
+                  className="w-full flex items-center justify-between px-5 py-4 touch-manipulation active:bg-gray-50 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="text-xs transition-transform duration-300"
+                      style={{
+                        display: "inline-block",
+                        transform: isOpen ? "rotate(0deg)" : "rotate(-90deg)",
+                        color: memberColor,
+                      }}
                     >
-                      {record.emoji}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-700 truncate">{record.trigger}</p>
-                      <p className="text-xs text-gray-400">{formatTime(record.savedAt)}</p>
-                    </div>
-                    <span className="text-sm font-bold flex-shrink-0" style={{ color: memberColor }}>
-                      +{record.amount.toLocaleString()}円
+                      ▼
                     </span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ))
+                    <span className="text-sm font-bold text-gray-700">{group.label}</span>
+                    <span className="text-xs text-gray-400">{group.records.length}件</span>
+                  </div>
+                  <span className="text-sm font-bold" style={{ color: memberColor }}>
+                    +{group.total.toLocaleString()}円
+                  </span>
+                </button>
+
+                {/* 記録リスト（アコーディオン） */}
+                <div
+                  className="overflow-hidden transition-all duration-300"
+                  style={{ maxHeight: isOpen ? `${group.records.length * 64}px` : "0px" }}
+                >
+                  <ul className="border-t border-gray-50 divide-y divide-gray-50">
+                    {group.records.map((record) => (
+                      <li key={record.id} className="flex items-center gap-3 px-5 py-3">
+                        <div
+                          className="w-9 h-9 rounded-xl flex items-center justify-center text-base flex-shrink-0"
+                          style={{ background: `${memberColor}18` }}
+                        >
+                          {record.emoji}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-700 truncate">{record.trigger}</p>
+                          <p className="text-xs text-gray-400">{formatTime(record.savedAt)}</p>
+                        </div>
+                        <span className="text-sm font-bold flex-shrink-0" style={{ color: memberColor }}>
+                          +{record.amount.toLocaleString()}円
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </section>
+            );
+          })
         )}
       </main>
     </div>
