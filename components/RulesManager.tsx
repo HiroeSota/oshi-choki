@@ -120,7 +120,7 @@ export function RulesManager({ oshiId, memberColor, initialRules, allOshis, sele
               key={o.id}
               type="button"
               onClick={() => router.push(`/settings/rules?oshi_id=${o.id}`)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all active:scale-95 touch-manipulation"
               style={{
                 background: o.id === selectedOshiId ? o.memberColor : "#f3f4f6",
                 color: o.id === selectedOshiId ? "white" : "#6a7282",
@@ -158,39 +158,41 @@ export function RulesManager({ oshiId, memberColor, initialRules, allOshis, sele
                     className="rounded-2xl p-3 space-y-2"
                     style={{ background: `${memberColor}11`, border: `1.5px solid ${memberColor}44` }}
                   >
-                    <div className="flex gap-2">
-                      <select
-                        value={editState.emoji}
-                        onChange={(e) => setEditState({ ...editState, emoji: e.target.value })}
-                        className="w-14 text-center rounded-xl border border-gray-200 text-lg py-1"
-                      >
-                        {EMOJI_OPTIONS.map((e) => (
-                          <option key={e} value={e}>{e}</option>
-                        ))}
-                      </select>
-                      <input
-                        type="text"
-                        value={editState.trigger}
-                        onChange={(e) => setEditState({ ...editState, trigger: e.target.value })}
-                        className="flex-1 px-3 py-1.5 rounded-xl border border-gray-200 text-sm focus:outline-none"
-                        placeholder="きっかけ"
-                      />
-                      <div className="flex items-center gap-1">
+                    <div className="space-y-2">
+                      <div className="flex gap-2">
+                        <select
+                          value={editState.emoji}
+                          onChange={(e) => setEditState({ ...editState, emoji: e.target.value })}
+                          className="w-14 text-center rounded-xl border border-gray-200 text-lg py-1 flex-shrink-0"
+                        >
+                          {EMOJI_OPTIONS.map((e) => (
+                            <option key={e} value={e}>{e}</option>
+                          ))}
+                        </select>
+                        <input
+                          type="text"
+                          value={editState.trigger}
+                          onChange={(e) => setEditState({ ...editState, trigger: e.target.value })}
+                          className="flex-1 min-w-0 px-3 py-1.5 rounded-xl border border-gray-200 text-sm focus:outline-none"
+                          placeholder="きっかけ"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
                         <input
                           type="number"
                           value={editState.amount}
                           onChange={(e) => setEditState({ ...editState, amount: e.target.value })}
-                          className="w-20 px-2 py-1.5 rounded-xl border border-gray-200 text-sm focus:outline-none"
+                          className="flex-1 px-3 py-1.5 rounded-xl border border-gray-200 text-sm focus:outline-none"
                           placeholder="金額"
                         />
-                        <span className="text-xs text-gray-500">円</span>
+                        <span className="text-xs text-gray-500 flex-shrink-0">円</span>
                       </div>
                     </div>
                     <div className="flex gap-2 justify-end">
                       <button
                         type="button"
                         onClick={() => setEditState(null)}
-                        className="text-xs text-gray-400 px-3 py-1.5 rounded-lg hover:bg-gray-100"
+                        className="text-xs text-gray-400 px-3 py-1.5 rounded-lg hover:bg-gray-100 active:scale-95 transition-transform duration-75 touch-manipulation"
                       >
                         キャンセル
                       </button>
@@ -198,7 +200,7 @@ export function RulesManager({ oshiId, memberColor, initialRules, allOshis, sele
                         type="button"
                         disabled={isPending}
                         onClick={() => handleEditSave(rule.id)}
-                        className="text-xs text-white px-3 py-1.5 rounded-lg font-bold disabled:opacity-60"
+                        className="text-xs text-white px-3 py-1.5 rounded-lg font-bold disabled:opacity-60 active:scale-95 transition-transform duration-75 touch-manipulation"
                         style={{ background: memberColor }}
                       >
                         保存
@@ -234,7 +236,7 @@ export function RulesManager({ oshiId, memberColor, initialRules, allOshis, sele
                             emoji: rule.emoji,
                           })
                         }
-                        className="text-xs text-gray-400 px-2 py-1 rounded-lg hover:bg-gray-100 transition-colors"
+                        className="text-xs text-gray-400 px-2 py-1 rounded-lg hover:bg-gray-100 transition-all active:scale-95 touch-manipulation"
                       >
                         編集
                       </button>
@@ -242,7 +244,7 @@ export function RulesManager({ oshiId, memberColor, initialRules, allOshis, sele
                         type="button"
                         disabled={isPending}
                         onClick={() => handleDelete(rule.id)}
-                        className="text-xs text-red-400 px-2 py-1 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-40"
+                        className="text-xs text-red-400 px-2 py-1 rounded-lg hover:bg-red-50 transition-all disabled:opacity-40 active:scale-95 touch-manipulation"
                       >
                         削除
                       </button>
@@ -268,7 +270,7 @@ export function RulesManager({ oshiId, memberColor, initialRules, allOshis, sele
                     key={e}
                     type="button"
                     onClick={() => setNewEmoji(e)}
-                    className="w-9 h-9 rounded-xl text-lg flex items-center justify-center transition-all"
+                    className="w-9 h-9 rounded-xl text-lg flex items-center justify-center transition-all active:scale-90 touch-manipulation"
                     style={{
                       background: newEmoji === e ? `${memberColor}22` : "#f5f5f5",
                       border: newEmoji === e ? `2px solid ${memberColor}` : "2px solid transparent",
@@ -315,7 +317,7 @@ export function RulesManager({ oshiId, memberColor, initialRules, allOshis, sele
             <button
               type="submit"
               disabled={isPending}
-              className="w-full py-3 rounded-xl text-white font-bold text-sm transition-opacity disabled:opacity-60"
+              className="w-full py-3 rounded-xl text-white font-bold text-sm transition-all disabled:opacity-60 active:scale-95 touch-manipulation"
               style={{ background: memberColor }}
             >
               {isPending ? "追加中..." : "ルールを追加する"}
@@ -327,7 +329,7 @@ export function RulesManager({ oshiId, memberColor, initialRules, allOshis, sele
       <div className="fixed bottom-0 left-0 right-0 pb-6 flex justify-center">
         <Link
           href="/"
-          className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white text-sm font-bold shadow-md border border-gray-100 hover:shadow-lg transition-all active:scale-95"
+          className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white text-sm font-bold shadow-md border border-gray-100 hover:shadow-lg transition-all active:scale-95 touch-manipulation"
           style={{ color: memberColor }}
         >
           ← ダッシュボードに戻る
